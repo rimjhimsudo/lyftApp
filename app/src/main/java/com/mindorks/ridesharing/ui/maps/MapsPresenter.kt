@@ -1,10 +1,12 @@
 package com.mindorks.ridesharing.ui.maps
 
 import android.util.Log
+import com.google.maps.model.LatLng
 import com.google.maps.model.TransitAgency
 import com.mindorks.ridesharing.data.network.NetworkService
 import com.mindorks.ridesharing.simulator.WebSocket
 import com.mindorks.ridesharing.simulator.WebSocketListener
+import org.json.JSONObject
 
 class MapsPresenter(private val networkService: NetworkService):WebSocketListener{
 
@@ -18,6 +20,10 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
         this.view=view
         webSocket=networkService.createwebsocket(this)
         webSocket.connect()
+    }
+    fun reqNearByCabs(latLng: LatLng){
+        val jsonobject=JSONObject()
+        jsonobject.put()
     }
     fun onDetach(){
         webSocket.disconnect()

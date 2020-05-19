@@ -6,6 +6,8 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -16,12 +18,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Polyline
 import com.mindorks.ridesharing.R
 import com.mindorks.ridesharing.data.network.NetworkService
 import com.mindorks.ridesharing.utils.PermissonUtils
 import com.mindorks.ridesharing.utils.ViewUtils
-import kotlinx.android.synthetic.main.activity_maps.*
+
 
 class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
     companion object {
@@ -56,6 +57,26 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         mapspresenter= MapsPresenter(NetworkService())
         mapspresenter.onAttach(this)
         //setUpClickListener() setUpLocationListener()
+        val result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)
+        Log.e("Maps", "Result int value::$result")
+        when (result) {
+            ConnectionResult.SUCCESS -> Log.e("Maps", "RESULT:: SUCCESS")
+            ConnectionResult.DEVELOPER_ERROR -> Log.e("Maps", "RESULT:: DE")
+            ConnectionResult.INTERNAL_ERROR -> Log.e("Maps", "RESULT:: IE")
+            ConnectionResult.INVALID_ACCOUNT -> Log.e("Maps", "RESULT:: IA")
+            ConnectionResult.NETWORK_ERROR -> Log.e("Maps", "RESULT:: NE")
+            ConnectionResult.RESOLUTION_REQUIRED -> Log.e("Maps", "RESULT:: RR")
+            ConnectionResult.SERVICE_DISABLED -> Log.e("Maps", "RESULT:: SD")
+            ConnectionResult.SERVICE_INVALID -> Log.e("Maps", "RESULT:: SI")
+            ConnectionResult.SERVICE_MISSING -> Log.e("Maps", "RESULT:: SM")
+            ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED -> Log.e(
+                "Maps",
+                "RESULT:: SVUR"
+            )
+            ConnectionResult.SIGN_IN_REQUIRED -> Log.e("Maps", "RESULT:: SIR")
+            else -> {
+            }
+        }
     }
     override fun onStart() {
         super.onStart()
