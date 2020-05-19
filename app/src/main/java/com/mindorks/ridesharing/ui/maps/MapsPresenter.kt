@@ -1,11 +1,13 @@
 package com.mindorks.ridesharing.ui.maps
 
 import android.util.Log
-import com.google.maps.model.LatLng
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.model.TransitAgency
 import com.mindorks.ridesharing.data.network.NetworkService
 import com.mindorks.ridesharing.simulator.WebSocket
 import com.mindorks.ridesharing.simulator.WebSocketListener
+import com.mindorks.ridesharing.utils.Constants
 import org.json.JSONObject
 
 class MapsPresenter(private val networkService: NetworkService):WebSocketListener{
@@ -23,7 +25,22 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
     }
     fun reqNearByCabs(latLng: LatLng){
         val jsonobject=JSONObject()
-        jsonobject.put()
+        jsonobject.put(Constants.TYPE,Constants.NEAR_BY_CABS)
+        jsonobject.put(Constants.LAT,latLng.latitude)
+        jsonobject.put(Constants.LNG,latLng.longitude)
+        webSocket.sendMessage(jsonobject.toString())
+
+    }
+    private fun handleOnMessageNearbyCabs(jsonObject: JSONObject) {
+        val nearbyCabLocations = arrayListOf<LatLng>()
+        val jsonArray = jsonObject.getJSONArray(Constants.LOCATIONS)
+        for (i in 0 until jsonArray.length()) {
+            val lat = (jsonArray.get(i) as JSONObject).getDouble(Constants.LAT)
+            val lng = (jsonArray.get(i) as JSONObject).getDouble(Constants.LNG)
+            val latLng = LatLng(lat, lng)
+            nearbyCabLocations.add(latLng)
+        }
+        view?.showNearByCabs(nearbyCabLocations)
     }
     fun onDetach(){
         webSocket.disconnect()
@@ -35,8 +52,14 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
 
     override fun onMessage(data: String) {
         Log.d(TAG,"on message:$data")
-
+        val jsonObject = JSONObject(data)
+        when (jsonObject.getString(Constants.TYPE)) {
+            Constants.NEAR_BY_CABS -> {
+                handleOnMessageNearbyCabs(jsonObject)
+            }
+        }
     }
+
 
     override fun onDisconnect() {
         Log.d(TAG,"onDisConnect")

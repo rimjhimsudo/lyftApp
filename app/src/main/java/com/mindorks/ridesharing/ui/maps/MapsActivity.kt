@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesUtil
+import com.google.android.gms.common.util.MapUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -16,12 +17,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.*
+
 import com.mindorks.ridesharing.R
 import com.mindorks.ridesharing.data.network.NetworkService
 import com.mindorks.ridesharing.utils.PermissonUtils
 import com.mindorks.ridesharing.utils.ViewUtils
+import com.mindorks.ridesharing.utils.MapsUtils
 
 
 class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
@@ -39,8 +41,8 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
    private var currentLatLng: LatLng? = null
     private var pickUpLatLng: LatLng? = null
     private var dropLatLng: LatLng? = null
-    /*private val nearbyCabMarkerList = arrayListOf<Marker>()
-    private var destinationMarker: Marker? = null
+    private val nearbyCabMarkerList = arrayListOf<Marker>()
+    /*private var destinationMarker: Marker? = null
     private var originMarker: Marker? = null
     private var greyPolyLine: Polyline? = null
     private var blackPolyline: Polyline? = null
@@ -102,8 +104,8 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         }
     private fun setUpLocationListener() {
         fusedLocationProviderClient = FusedLocationProviderClient(this)
-        // for getting the current location update after every 2 seconds
         val locationRequest = LocationRequest().setInterval(2000).setFastestInterval(2000)
+                //2 secs
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
         locationCallback = object : LocationCallback() {
@@ -117,7 +119,7 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
                             enableMyLocationOnMap()
                             moveCamera(currentLatLng)
                             animateCamera(currentLatLng)
-                            //presenter.requestNearbyCabs(currentLatLng!!)
+                            mapspresenter.reqNearByCabs(currentLatLng!!)
                             Log.d("LOCRESULT", "clicked")
 
                         }
@@ -190,6 +192,20 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         mapspresenter.onDetach()
         //fusedLocationProviderClient?.removeLocationUpdates(locationCallback)
         super.onDestroy()
+    }
+    private fun addCarMarkerAndGet(latLng: LatLng): Marker {
+        val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(MapsUtils.getCarBitmap(this))
+        return mMap.addMarker(MarkerOptions().position(latLng).flat(true).icon(bitmapDescriptor))
+    }
+
+    override fun showNearByCabs(latlngList: List<LatLng>) {
+        //nterface method
+        nearbyCabMarkerList.clear()
+        for (latLng in latlngList) {
+            val nearbyCabMarker = addCarMarkerAndGet(latLng)
+            nearbyCabMarkerList.add(nearbyCabMarker)
+        }
+
     }
 
 }
