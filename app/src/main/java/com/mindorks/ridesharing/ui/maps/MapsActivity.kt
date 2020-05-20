@@ -168,8 +168,7 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         destinationMarker = addOriginDestinationMarkerAndGet(latlngList[latlngList.size-1])
         destinationMarker?.setAnchor(0.5f, 0.5f)
 
-        val polylineAnimator = Animation
-        Utils.polyLineAnimator()
+        val polylineAnimator =com.mindorks.ridesharing.utils.AnimationUtils.polyLineAnimator()
         polylineAnimator.addUpdateListener { valueAnimator ->
             val percentValue = (valueAnimator.animatedValue as Int)
             val index = (greyPolyLine?.points!!.size * (percentValue / 100.0f)).toInt()
@@ -190,7 +189,7 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
                     for (location in locationResult.locations) {
                         if (currentLatLng == null) {
                             currentLatLng = LatLng(location.latitude, location.longitude)
-                            //setCurrentLocationAsPickUp()
+                            setCurrentLocationAsPickUp()
                             enableMyLocationOnMap()
                             moveCamera(currentLatLng)
                             animateCamera(currentLatLng)
@@ -337,7 +336,7 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
                         DROP_REQUEST_CODE -> {
                             dropTextView.text = place.name
                             dropLatLng = place.latLng
-                            //checkAndShowRequestButton()
+                            checkAndShowRequestButton()
                         }
                     }
                 }
