@@ -39,7 +39,7 @@ object PermissonUtils
 
     fun showGPSNotEnabledDialog(context: Context) {
         AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.Enable_gps))
+            .setTitle(context.getString(R.string.enable_gps))
             .setMessage(context.getString(R.string.required_for_this_app))
             .setCancelable(false)
             .setPositiveButton(context.getString(R.string.enable_now)) { _, _ ->

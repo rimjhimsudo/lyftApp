@@ -31,6 +31,16 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
         webSocket.sendMessage(jsonobject.toString())
 
     }
+
+    fun requestCab(pickUpLatLng: LatLng, dropLatLng: LatLng) {
+        val jsonObject = JSONObject()
+        jsonObject.put("type", "requestCab")
+        jsonObject.put("pickUpLat", pickUpLatLng.latitude)
+        jsonObject.put("pickUpLng", pickUpLatLng.longitude)
+        jsonObject.put("dropLat", dropLatLng.latitude)
+        jsonObject.put("dropLng", dropLatLng.longitude)
+        webSocket.sendMessage(jsonObject.toString())
+    }
     private fun handleOnMessageNearbyCabs(jsonObject: JSONObject) {
         val nearbyCabLocations = arrayListOf<LatLng>()
         val jsonArray = jsonObject.getJSONArray(Constants.LOCATIONS)
@@ -57,6 +67,7 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
             Constants.NEAR_BY_CABS -> {
                 handleOnMessageNearbyCabs(jsonObject)
             }
+
         }
     }
 
