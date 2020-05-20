@@ -3,12 +3,15 @@ package com.mindorks.ridesharing.ui.maps
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
 import android.provider.VoicemailContract
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
@@ -141,7 +144,41 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         requestCabButton.visibility = View.GONE
         statusTextView.text = getString(R.string.your_cab_is_booked)
     }
-        private fun setUpLocationListener() {
+
+    override fun showPath(latlngList: List<LatLng>) {
+        val builder = LatLngBounds.Builder()
+        for (latLng in latlngList) {
+            builder.include(latLng)
+        }
+        val bounds = builder.build()
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 2))
+        val polylineOptions = PolylineOptions()
+        polylineOptions.color(Color.GRAY)
+        polylineOptions.width(5f)
+        polylineOptions.addAll(latlngList)
+        greyPolyLine = mMap.addPolyline(polylineOptions)
+
+        val blackPolylineOptions = PolylineOptions()
+        blackPolylineOptions.width(5f)
+        blackPolylineOptions.color(Color.BLACK)
+        blackPolyline = mMap.addPolyline(blackPolylineOptions)
+
+        originMarker = addOriginDestinationMarkerAndGet(latlngList[0])
+        originMarker?.setAnchor(0.5f, 0.5f)
+        destinationMarker = addOriginDestinationMarkerAndGet(latlngList[latlngList.size-1])
+        destinationMarker?.setAnchor(0.5f, 0.5f)
+
+        val polylineAnimator = Animation
+        Utils.polyLineAnimator()
+        polylineAnimator.addUpdateListener { valueAnimator ->
+            val percentValue = (valueAnimator.animatedValue as Int)
+            val index = (greyPolyLine?.points!!.size * (percentValue / 100.0f)).toInt()
+            blackPolyline?.points = greyPolyLine?.points!!.subList(0, index)
+        }
+        polylineAnimator.start()
+    }
+
+    private fun setUpLocationListener() {
         fusedLocationProviderClient = FusedLocationProviderClient(this)
         val locationRequest = LocationRequest().setInterval(2000).setFastestInterval(2000)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -278,6 +315,8 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
         destinationMarker = null
         movingCabMarker = null
     }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICKUP_REQUEST_CODE || requestCode == DROP_REQUEST_CODE) {

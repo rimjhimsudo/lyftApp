@@ -67,6 +67,20 @@ class MapsPresenter(private val networkService: NetworkService):WebSocketListene
             Constants.NEAR_BY_CABS -> {
                 handleOnMessageNearbyCabs(jsonObject)
             }
+            Constants.CAB_BOOKED->{
+                view?.informCabBooked()
+            }
+            Constants.PICKUP_PATH->{
+                val jsonArray = jsonObject.getJSONArray("path")
+                val pickUpPath = arrayListOf<LatLng>()
+                for (i in 0 until jsonArray.length()) {
+                    val lat = (jsonArray.get(i) as JSONObject).getDouble("lat")
+                    val lng = (jsonArray.get(i) as JSONObject).getDouble("lng")
+                    val latLng = LatLng(lat, lng)
+                    pickUpPath.add(latLng)
+                }
+                view?.showPath(pickUpPath)
+            }
 
         }
     }
