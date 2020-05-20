@@ -199,11 +199,12 @@ class MapsActivity : AppCompatActivity(),MapsView, OnMapReadyCallback {
                         multiplier * currentLatLngFromServer!!.longitude + (1 - multiplier) * previousLatLngFromServer!!.longitude
                     )
                     movingCabMarker?.position = nextLocation
-                    movingCabMarker?.setAnchor(0.5f, 0.5f)
                     val rotation = MapsUtils.getRotation(previousLatLngFromServer!!, nextLocation)
                     if (!rotation.isNaN()) {
                         movingCabMarker?.rotation = rotation
                     }
+                    movingCabMarker?.setAnchor(0.5f, 0.5f)
+
                     animateCamera(nextLocation)
                 }
             }
